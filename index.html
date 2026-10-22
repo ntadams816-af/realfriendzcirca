@@ -300,13 +300,35 @@
     tr.me{border-left:4px solid var(--red);background:#FFF0F0!important}
     tr.me td:first-child{box-shadow:none}
   }
+  /* ---------- score ticker ---------- */
+  .ticker{position:sticky;top:0;z-index:50;display:flex;align-items:stretch;height:40px;background:#121213;color:#fff;border-bottom:1px solid #2A2B2E;font-family:"Barlow Condensed";overflow:hidden}
+  .ticker .lbl{flex:none;display:flex;align-items:center;gap:7px;background:var(--red);padding:0 16px 0 14px;font-weight:900;font-style:italic;font-size:17px;letter-spacing:.03em;text-transform:uppercase;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);padding-right:22px;z-index:2}
+  .ticker .lbl i{width:7px;height:7px;border-radius:50%;background:#fff;display:none}
+  .ticker.has-live .lbl i{display:inline-block;animation:blink 1.2s infinite}
+  .ticker .vp{flex:1;overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent)}
+  .ticker .track{display:flex;width:max-content;height:100%;animation:tick var(--dur,60s) linear infinite}
+  .ticker:hover .track{animation-play-state:paused}
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .ticker .run{display:flex;height:100%}
+  .tk{display:flex;align-items:center;gap:12px;padding:0 18px;border-right:1px solid #2A2B2E;white-space:nowrap;font-size:15px}
+  .tk .tm{text-transform:uppercase;display:grid;grid-template-columns:auto auto;column-gap:8px;line-height:1.05;font-weight:700;letter-spacing:.02em}
+  .tk .tm span{color:#C9CACD} .tk .tm b{font-weight:800;text-align:right;min-width:14px}
+  .tk .tm .w{color:#fff} .tk .tm .l{color:#7D7E82}
+  .tk .tm .pk{all:unset;color:#fff;box-shadow:inset 0 -2px 0 var(--red)}
+  .tk .st{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#A9AAAD;text-align:center;min-width:52px}
+  .tk.in .st{color:#fff} .tk.in .st::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-right:5px;vertical-align:2px}
+  .tk .who{font-size:11.5px;font-weight:800;letter-spacing:.06em;background:var(--red);color:#fff;padding:2px 6px 1px;border-radius:2px;text-transform:uppercase}
+  .tk .ln{font-size:12.5px;color:#7D7E82;font-weight:600}
+  @media (prefers-reduced-motion:reduce){.ticker .track{animation:none}.ticker .vp{overflow-x:auto}.ticker .run+.run{display:none}}
+  @media (max-width:640px){.ticker{height:36px}.ticker .lbl{font-size:14px;padding:0 18px 0 10px}.tk{padding:0 12px;gap:9px;font-size:14px}.tk .ln{display:none}}
 </style>
 </head>
 <body>
+<div class="ticker" id="ticker" aria-label="Live NFL scores"><div class="lbl"><i></i><span id="tkLbl">NFL</span></div><div class="vp"><div class="track" id="tkTrack"></div></div></div>
 <header><div class="wrap">
   <div class="brand">Circa Contests<small>MILLION VIII · 2026</small></div>
   <div class="status">
-    <div><span class="dot" id="dot"></span><span id="statusTxt">Loading scores…</span><span class="sub" id="statusSub">Scores refresh every 60 seconds</span></div>
+    <div><span class="dot" id="dot"></span><span id="statusTxt">Loading scores…</span><span class="sub" id="statusSub">Scores refresh every 30 seconds</span></div>
     <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
       <button class="btn ghost" id="editBtn" type="button">Enter scores manually</button>
       <button class="btn" id="refreshBtn" type="button">Refresh now</button>
@@ -711,7 +733,7 @@ function applyEvents(events){let n=0; (events||[]).forEach(ev=>{const c=ev.compe
 async function fetchScores(){
   if(manual) return; const st=document.getElementById('statusTxt'), sub=document.getElementById('statusSub');
   const nick=x=>{const n=(x.team.name||x.team.displayName||'').trim().split(' ').pop().toUpperCase(); return ESPN_NAME[n]||n;};
-  const urls=[`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${curWeek}&limit=100`,
+  const urls=[`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${LIVE_WEEK}&limit=100`,
               'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?limit=100'];
   let lastErr=null, got=0;
   for(const u of urls){
@@ -720,17 +742,45 @@ async function fetchScores(){
       (j.events||[]).forEach(ev=>{const c=ev.competitions[0]; const home=c.competitors.find(x=>x.homeAway==='home'), away=c.competitors.find(x=>x.homeAway==='away');
         const k=nick(away)+'@'+nick(home); if(!scores[k])return;
         const s=c.status||ev.status, state=s.type.state;
-        scores[k]={a:state==='pre'?null:Number(away.score),h:state==='pre'?null:Number(home.score),state,clock:s.displayClock,period:s.period}; got++;});
+        scores[k]={a:state==='pre'?null:Number(away.score),h:state==='pre'?null:Number(home.score),state,clock:s.displayClock,period:s.period,detail:s.type.shortDetail}; got++;});
       if(got){ break; }
     }catch(e){ lastErr=e; }
   }
-  if(got){ st.textContent='Live · updated '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); sub.textContent=`${got} games matched · refreshes every 60 seconds`; document.getElementById('dot').style.background='#3CCB5A'; }
+  if(got){ st.textContent='Live · updated '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); sub.textContent=`${got} games matched · refreshes every 30 seconds`; document.getElementById('dot').style.background='#3CCB5A'; }
   else { st.textContent='Using last known scores'; sub.textContent='Live feed unavailable'+(lastErr?' ('+lastErr.message+')':'')+' — use “Enter scores manually” to update'; document.getElementById('dot').style.background='#F0B429'; }
   renderAll();
 }
 
+/* ---------- score ticker ---------- */
+const LIVE_WEEK=Math.max(...Object.keys(WEEKS).map(Number));
+let tkCount=-1;
+function renderTicker(){
+  const wk=WEEKS[LIVE_WEEK]; if(!wk) return;
+  const gp=(GUYS_PICKS.find(x=>x.week===LIVE_WEEK)||{}).picks||{};
+  const mine=new Set((MY_WEEK_PICKS[LIVE_WEEK]||[]));
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const games=wk.games.slice().sort((x,y)=>{const o={in:0,pre:1,post:2};const sx=scores[x.away+'@'+x.home],sy=scores[y.away+'@'+y.home];return (o[sx.state]-o[sy.state])||(new Date(x.kick)-new Date(y.kick));});
+  let live=0;
+  const items=games.map(g=>{
+    const s=scores[g.away+'@'+g.home]||{state:'pre'}; if(s.state==='in')live++;
+    const fin=s.state==='post', aw=fin&&s.a>s.h, hw=fin&&s.h>s.a;
+    const pickedBy=GUYS.filter(n=>gp[n]===g.away||gp[n]===g.home);
+    const picked=t=>Object.values(gp).includes(t)||mine.has(t);
+    const nm=(t,win,lose)=>`<span class="${picked(t)?'pk':''} ${win?'w':lose?'l':''}">${esc(t)}</span>`;
+    const st=s.state==='pre'?kickLabel(g.kick):s.state==='in'?(s.detail||('Q'+(s.period||'')+' '+(s.clock||''))):(s.detail&&/OT/i.test(s.detail)?'Final/OT':'Final');
+    const fav=Object.entries(g.sides||{}).find(([,v])=>v.line<0);
+    const ln=fav?`${fav[0]} ${fmtLine(fav[1].line)}`:'PK';
+    return `<div class="tk ${s.state}"><div class="tm">${nm(g.away,aw,hw)}<b class="${hw?'l':''}">${s.a??''}</b>${nm(g.home,hw,aw)}<b class="${aw?'l':''}">${s.h??''}</b></div><div class="st">${esc(st)}</div>${s.state==='pre'?`<span class="ln">${esc(ln)}</span>`:''}${pickedBy.length?`<span class="who">${pickedBy.map(esc).join(' · ')}</span>`:''}</div>`;
+  }).join('');
+  const tr=document.getElementById('tkTrack');
+  tr.innerHTML=`<div class="run">${items}</div><div class="run" aria-hidden="true">${items}</div>`;
+  document.getElementById('ticker').classList.toggle('has-live',live>0);
+  document.getElementById('tkLbl').textContent=live?`NFL · Wk ${LIVE_WEEK} · Live`:`NFL · Wk ${LIVE_WEEK}`;
+  if(tkCount!==games.length){tkCount=games.length; tr.style.setProperty('--dur',Math.max(30,games.length*5.5)+'s');}
+}
+
 /* ---------- wiring ---------- */
-function renderAll(){renderBoard();renderStandings();renderSurvivor();renderWeeks();renderGuys();renderMine();}
+function renderAll(){renderTicker();renderBoard();renderStandings();renderSurvivor();renderWeeks();renderGuys();renderMine();}
 document.getElementById('refreshBtn').addEventListener('click',()=>{manual=false;document.body.classList.remove('editing');document.getElementById('editBtn').textContent='Enter scores manually';fetchScores();});
 document.getElementById('editBtn').addEventListener('click',e=>{manual=!manual;document.body.classList.toggle('editing',manual);e.target.textContent=manual?'Done editing':'Enter scores manually';document.getElementById('statusTxt').textContent=manual?'Manual scores':'Live';if(!manual)fetchScores();});
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('on',x.id==='p-'+b.dataset.p));}));
@@ -740,7 +790,7 @@ document.getElementById('moreBtn').addEventListener('click',()=>{shown+=200;rend
 document.getElementById('svMore').addEventListener('click',()=>{svShown+=200;renderSurvivor();});
 document.getElementById('usedGrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=b.dataset.t;usedSet.has(t)?usedSet.delete(t):usedSet.add(t);renderUsed();});
 document.getElementById('weeks').addEventListener('click',e=>{const b=e.target.closest('.wk');if(b)setWeek(+b.dataset.w);});
-renderUsed(); setWeek(7); fetchScores(); setInterval(fetchScores,60000);
+renderUsed(); setWeek(7); renderTicker(); fetchScores(); setInterval(fetchScores,30000);
 </script>
 </body>
 </html>
