@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Circa Contests — Live Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--navy:#14337E;--navy-deep:#0D2359;--board:#EDF0F5;--board-line:#D3D9E4;--ink:#101828;--muted:#5B667A;--white:#FFFFFF;
     --win:#1E7B45;--win-bg:#E3F3E9;--loss:#B42318;--loss-bg:#FBE9E7;--push:#A56A00;--push-bg:#FFF2D6;--live:#D92D20}
@@ -208,6 +208,97 @@
     .gwk .pr .pick{font-size:17px} .gwk .pr .pick small{display:block;margin:2px 0 0}
     .gchart{gap:8px}
     .note{font-size:12px}
+  }
+  /* ================= BROADCAST / SPORTS-NETWORK THEME ================= */
+  :root{--navy:#1B1B1D;--navy-deep:#121213;--board:#EDEEF0;--board-line:#DCDDDF;--ink:#121213;--muted:#6C6D6F;--red:#CC0000;--red-dk:#A30000;--live:#CC0000}
+  html,body{background:var(--board)}
+  header{background:#121213;padding:0;border-bottom:4px solid var(--red);position:relative}
+  header::before{content:"";display:block;height:6px;background:repeating-linear-gradient(-45deg,#CC0000 0 10px,#A30000 10px 20px)}
+  header .wrap{align-items:center;padding-top:14px;padding-bottom:14px}
+  .brand{font-style:italic;font-weight:900;text-transform:uppercase;font-size:42px;letter-spacing:-.01em;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand::before{content:"";width:10px;align-self:stretch;min-height:38px;background:var(--red);transform:skewX(-14deg);margin-right:2px}
+  .brand small{font-style:normal;font-weight:700;font-size:13px;letter-spacing:.22em;opacity:1;margin:0;background:var(--red);color:#fff;padding:4px 10px 3px;transform:skewX(-14deg);display:inline-block}
+  .status{font-size:16px;text-transform:uppercase;letter-spacing:.04em}
+  .status .dot{background:var(--red);animation:pulseR 1.6s infinite}
+  @keyframes pulseR{0%{box-shadow:0 0 0 0 rgba(204,0,0,.7)}70%{box-shadow:0 0 0 9px rgba(204,0,0,0)}100%{box-shadow:0 0 0 0 rgba(204,0,0,0)}}
+  .status .sub{text-transform:none;letter-spacing:0;color:#A9AAAD;opacity:1}
+  .btn{border-radius:3px;text-transform:uppercase;font-size:15px;letter-spacing:.06em;color:#121213}
+  .btn.ghost{border-color:#4A4B4E;color:#fff} .btn.ghost:hover{border-color:#fff}
+  .btn.navy{background:var(--red);border-color:var(--red);color:#fff}
+  h2{font-style:italic;font-weight:900;text-transform:uppercase;font-size:28px;color:var(--ink);letter-spacing:-.005em;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;border-bottom:2px solid var(--ink);padding-bottom:7px}
+  h2::before{content:"";width:6px;height:22px;background:var(--red);transform:skewX(-14deg);align-self:center}
+  h2 span{font-style:normal;text-transform:none;font-size:15px;margin-left:0}
+  /* nav tabs: white sub-nav bar w/ red underline */
+  .tabs{background:#fff;border-bottom:1px solid var(--board-line);margin:0 -16px;padding:0 16px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .tab{text-transform:uppercase;font-size:18px;letter-spacing:.05em;color:#48494C;padding:13px 18px 11px;border-bottom-width:4px}
+  .tab.on{color:var(--ink);border-bottom-color:var(--red)} .tab:hover{color:var(--ink)}
+  .weeks{gap:6px}
+  .wk{border-radius:999px;text-transform:uppercase;font-size:15px;letter-spacing:.04em;padding:6px 14px;color:#48494C}
+  .wk.on{background:var(--ink);border-color:var(--ink)}
+  .wk:hover{border-color:var(--ink)}
+  /* cards */
+  .tile,.game,.gc,.grow,.gwk,.used,.sv .t,.dist .d,table,.drop{border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .tile{border-top:3px solid var(--ink)} .tile b{color:var(--ink);font-style:italic}
+  .tile span{text-transform:uppercase;letter-spacing:.05em;font-size:11.5px;font-weight:600}
+  /* scoreboard game cards */
+  .game{border:0}
+  .game .meta{background:#121213;color:#D5D6D8;border-bottom:0;text-transform:uppercase;letter-spacing:.06em;font-size:13.5px}
+  .game .meta .live,.gc .live{color:#fff;background:var(--red);padding:1px 7px 0;border-radius:2px;font-weight:800;letter-spacing:.08em}
+  .game .meta .live::before,.gc .live::before{background:#fff;animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  @media (prefers-reduced-motion:reduce){.game .meta .live::before,.gc .live::before,.status .dot{animation:none}}
+  .side + .side{border-top:1px solid #EEEFF0}
+  .side .team{font-weight:800;text-transform:uppercase}
+  .side .team .pop{border-color:var(--red);color:#fff;background:var(--red);border-radius:2px}
+  .side .score{font-style:italic}
+  .side .res,.gwk .pr .res{border-radius:2px;text-transform:uppercase}
+  /* tables: stat-sheet style */
+  table{border:0}
+  th{background:#fff;color:var(--muted);font-size:13px;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--ink)}
+  tbody tr:nth-child(even) td{background:#F8F8F9}
+  td.pts{color:var(--ink);font-style:italic}
+  tr.me td,tbody tr.me:nth-child(even) td{background:#FFF0F0;border-left:0}
+  tr.me td:first-child{box-shadow:inset 4px 0 0 var(--red)}
+  .pk{border-radius:2px;text-transform:uppercase}
+  .dist .d b{color:var(--ink)}
+  /* my-entry banner = scorebug */
+  .mine{background:#121213;border-radius:4px;border-left:8px solid var(--red);margin-top:16px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  .mine::after{content:"";position:absolute;right:-40px;top:0;bottom:0;width:180px;background:linear-gradient(105deg,transparent 0 30%,rgba(204,0,0,.22) 30% 46%,transparent 46% 54%,rgba(204,0,0,.12) 54% 70%,transparent 70%);pointer-events:none}
+  .mine .who{font-style:italic;font-weight:900;text-transform:uppercase}
+  .mine .who small{font-style:normal;text-transform:none;color:#A9AAAD;opacity:1}
+  .mine .nums b{font-style:italic}
+  .mine .nums span{text-transform:uppercase;letter-spacing:.06em;color:#A9AAAD;opacity:1;font-size:11px}
+  .mine .picks,.mine .nums,.mine .who{position:relative;z-index:1}
+  /* guys */
+  .gc{border:0;border-top:5px solid #C8C9CC}
+  .gc .top .nm{text-transform:uppercase;font-style:italic}
+  .gc .pick{color:var(--ink);text-transform:uppercase}
+  .gc .sc .t.picked{color:var(--red)}
+  .gc .badge{border-radius:2px;text-transform:uppercase}
+  .grow{border:0} .grow .nm{text-transform:uppercase;font-style:italic} .grow .rec{color:var(--ink);font-style:italic}
+  .grow.me{outline:0;box-shadow:inset 5px 0 0 var(--red),0 1px 2px rgba(0,0,0,.08)}
+  .grow .bar{border-radius:2px}
+  .gwk{border:0} .gwk .hd{background:#121213;color:#fff;border-bottom:0;text-transform:uppercase;font-style:italic;letter-spacing:.03em}
+  .av{border-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+  .av.ini{background:var(--red)}
+  .used .hd b{text-transform:uppercase;font-style:italic;color:var(--ink)}
+  .used button{border-radius:2px}
+  .sv .t .nm{text-transform:uppercase}
+  .drop{border-color:var(--red)} .drop b{color:var(--red)}
+  @media (min-width:641px){
+    .side{grid-template-columns:24px minmax(0,1fr) 52px 48px 40px 70px;gap:6px;padding:8px 10px}
+    .side .team{font-size:21px;min-width:0}
+  }
+  .side .team .pop{white-space:nowrap}
+  @media (max-width:640px){
+    header .wrap{padding-top:12px;padding-bottom:12px}
+    .brand{font-size:28px;gap:10px} .brand::before{min-height:26px;width:7px} .brand small{font-size:11px;letter-spacing:.16em}
+    .tabs{margin:0 -12px;padding:0 12px} .tab{font-size:16px;padding:11px 12px 9px}
+    h2{font-size:22px} h2::before{height:18px}
+    .mine{margin-top:12px;border-left-width:6px}
+    tbody tr:nth-child(even) td{background:transparent} tbody tr:nth-child(even){background:#F8F8F9}
+    tr.me{border-left:4px solid var(--red);background:#FFF0F0!important}
+    tr.me td:first-child{box-shadow:none}
   }
 </style>
 </head>
