@@ -402,7 +402,7 @@
 <script>
 const MY_ENTRY='REAL FRIENDZ-1';
 // Optional: my Million picks for a week before Circa posts the selection sheet, e.g. {2:['SEAHAWKS','EAGLES','BEARS','STEELERS','CHIEFS']}
-const MY_WEEK_PICKS={8:['RAIDERS','CARDINALS','STEELERS','PATRIOTS','CHIEFS'],9:['RAVENS','PACKERS','BEARS']};
+const MY_WEEK_PICKS={8:['RAIDERS','CARDINALS','STEELERS','PATRIOTS','CHIEFS'],9:['RAVENS','PACKERS','BEARS','RAIDERS']};
 const WEEKS={
 1:{games:[
   {away:'PATRIOTS',home:'SEAHAWKS',kick:'2026-09-10T00:20:00Z',sides:{PATRIOTS:{n:2,line:3,cnt:164},SEAHAWKS:{n:1,line:-3,cnt:407}}},
@@ -725,7 +725,7 @@ const GUYS_PICKS=[
   {week:6,picks:{Noel:'49ERS',Mike:'PATRIOTS',Tyler:'BILLS',Cliff:'TEXANS',Jack:'COWBOYS'}},
   {week:7,picks:{Noel:'BEARS',Mike:'LIONS',Cliff:'BENGALS',Tyler:'COWBOYS',Jack:'GIANTS'}},
   {week:8,picks:{Noel:'RAIDERS',Mike:'CARDINALS',Cliff:'STEELERS',Tyler:'PATRIOTS',Jack:'CHIEFS'}},
-  {week:9,picks:{Noel:'RAVENS',Cliff:'PACKERS',Mike:'BEARS'}},
+  {week:9,picks:{Noel:'RAVENS',Cliff:'PACKERS',Mike:'BEARS',Jack:'RAIDERS'}},
 ];
 function guyPick(w,team){const g=sideByTeam(team,WEEKS[w].games); if(!g) return {code:'pre',label:'no line',line:null}; const r=sideResult(g,team); return {...r,line:g.sides[team].line,g};}
 function renderGuysNow(){
